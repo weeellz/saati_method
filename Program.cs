@@ -3,33 +3,25 @@ using System.Collections.Generic;
 
 namespace testsaati
 {
-    class Program
+    public class MatrixOperators
     {
         // заполнение главной диагонали единицами
-        public static void InitMatrix(double[,] matrix, int c)
+        public void Init(double[,] matrix)
         {
-            for (int i = 0; i < c; i++)
+            var len = matrix.GetLength(0);
+            for (int i = 0; i < len; i++)
             {
-                for (int j = 0; j < c; j++)
-                {
-                    if (i == j)
-                    {
-                        matrix[i, j] = 1;
-                    }
-                    else
-                    {
-                        matrix[i, j] = 0;
-                    }
-                }
+                matrix[i, i] = 1;
             }
         }
 
         // заполнение элементов матрицы над главной диагональю
-        private static void ElementsFromKeyboard(double[,] matrix, int c)
+        public void ElementsFromKeyboard(double[,] matrix)
         {
-            for (int i = 0; i < c; i++)
+            var len = matrix.GetLength(0);
+            for (int i = 0; i < len; i++)
             {
-                for (int j = 0; j < c; j++)
+                for (int j = 0; j < len; j++)
                 {
                     if (j > i)
                     {
@@ -41,9 +33,10 @@ namespace testsaati
         }
 
         // расчёт элементов под главной диагональю
-        private static void CalcMatrixElements(double[,] matrix, int c)
+        public void CalcElements(double[,] matrix)
         {
-            for (int i = c - 1; i > 0; i--)
+            var len = matrix.GetLength(0);
+            for (int i = len - 1; i > 0; i--)
             {
                 for (int j = i - 1; j >= 0; j--)
                 {
@@ -53,100 +46,86 @@ namespace testsaati
         }
 
         // нормализация матрицы (считается сумма элементов в столбце и каждый элемент столбца делится на эту сумму)
-        private static void NormalizeMatrix(double[,] matrix, int c)
+        public void Normalize(double[,] matrix)
         {
-            double columnSum = 0;
-
-            for (int j = 0; j < c; j++)
+            var len = matrix.GetLength(0);
+            for (int j = 0; j < len; j++)
             {
-                for (int i = 0; i < c; i++)
+                var columnSum = 0D;
+
+                for (int i = 0; i < len; i++)
                 {
-                    columnSum = columnSum + matrix[i, j];
+                    columnSum += matrix[i, j];
                 }
 
-                for (int i = 0; i < c; i++)
+                for (int i = 0; i < len; i++)
                 {
-                    matrix[i, j] = matrix[i, j] / columnSum;
+                    matrix[i, j] /= columnSum;
                 }
-
-                columnSum = 0;
             }
         }
 
-        // рассчёт весов строк матрицы (среднее суммы элементов столбцов)
-        private static double[] CalcWeights(double[,] matrix, int c)
+        // расчёт весов строк матрицы (среднее суммы элементов столбцов)
+        public double[] CalcWeights(double[,] matrix)
         {
-            double[] weights = new double[c];
-            double lineSum = 0;
+            var len = matrix.GetLength(0);
+            var weights = new double[len];
 
-            for (int i = 0; i < c; i++)
+            for (int i = 0; i < len; i++)
             {
-                for (int j = 0; j < c; j++)
+                var lineSum = 0D;
+
+                for (int j = 0; j < len; j++)
                 {
-                    lineSum = lineSum + matrix[i, j];
+                    lineSum += matrix[i, j];
                 }
 
-                weights[i] = lineSum / c;
-
-                lineSum = 0;
+                weights[i] = lineSum / len;
             }
 
             return weights;
         }
 
         // формарование матрицы весов по каждому критерию
-        private static double[,] FormWeightsMatrix(List<double[]> weights, int c, int a)
+        public double[,] FormWeights(List<double[]> weights, int alterCount)
         {
-            double[,] weightsMatrix = new double[a, c];
-            for (int i = 0; i < a; i++)
-            {
-                for (int j = 0; j < c; j++)
-                {
-                    weightsMatrix[i, j] = 0;
-                }
-            }
+            var weightsMatrix = new double[alterCount, weights.Count];
 
-            for (int z = 0; z < weights.Count; z++)
+            for (int j = 0; j < weights.Count; j++)
             {
-                for (int j = 0; j < c; j++)
+                for (int i = 0; i < alterCount; i++)
                 {
-                    for (int i = 0; i < a; i++)
-                    {
-                        weightsMatrix[i, j] = weights[j][i];
-                    }
+                    weightsMatrix[i, j] = weights[j][i];
                 }
             }
 
             return weightsMatrix;
         }
 
-        // умножение матриц
-        private static double[] MatrixMultiplication(double[,] matrix1, double[] matrix2, int c, int a)
+        // умножение матриц (матрица с n столбцами и m строками на матрицу c 1 столбцом и n строк)
+        public double[] Multiplication(double[,] matrix1, double[] matrix2)
         {
-            double[] result = new double[c];
+            var critCount = matrix1.GetLength(1);
+            var alterCount = matrix1.GetLength(0);
+            var result = new double[critCount];
 
-            for (int i = 0; i < c; i++)
+            for (int i = 0; i < alterCount; i++)
             {
-                result[i] = 0;
-            }
-
-            for (int i = 0; i < a; i++)
-            {
-                for (int j = 0; j < c; j++)
+                for (int j = 0; j < critCount; j++)
                 {
-                    result[i] = result[i] + matrix1[i, j] * matrix2[j];
+                    result[i] += matrix1[i, j] * matrix2[j];
                 }
             }
 
             return result;
         }
 
-        // поиск самого подходящего варианта
-        private static double[] FindMax(double[] array)
+        // поиск самого подходящего варианта в матрице из одного столбца/строки
+        public (double max, int index) FindMax(double[] array)
         {
-            double[] result = new double[2];
             var max = array[0];
             var index = 0;
+
             for (int i = 0; i < array.Length; i++)
             {
                 if (max < array[i])
@@ -156,62 +135,63 @@ namespace testsaati
                 }
             }
 
-            result[0] = max;
-            result[1] = index + 1;
-
-            return result;
+            return (max, index + 1);
         }
+    }
 
+    class Program
+    {
         static void Main(string[] args)
         {
             Console.WriteLine("Кол-во критериев");
-            int c = int.Parse(Console.ReadLine());
+            int critCount = int.Parse(Console.ReadLine());
             Console.WriteLine("Кол-во альтернатив");
-            int a = int.Parse(Console.ReadLine());
+            int alterCount = int.Parse(Console.ReadLine());
+            var matrix = new MatrixOperators();
 
             Console.WriteLine("-------------------------------------");
 
             List<double[,]> matrixes = new List<double[,]>();
             List<double[]> weights = new List<double[]>();
 
-            matrixes.Add(new double[c, c]);
+            matrixes.Add(new double[critCount, critCount]);
 
-            for (int i = 0; i < c; i++)
+            for (int i = 0; i < critCount; i++)
             {
-                matrixes.Add(new double[a, a]);
+                matrixes.Add(new double[alterCount, alterCount]);
             }
 
-            InitMatrix(matrixes[0], c);
+            matrix.Init(matrixes[0]);
 
-            for (int i = 1; i < c + 1; i++)
+            for (int i = 1; i < critCount + 1; i++)
             {
-                InitMatrix(matrixes[i], a);
+                matrix.Init(matrixes[i]);
             }
 
-            ElementsFromKeyboard(matrixes[0], c);
+            matrix.ElementsFromKeyboard(matrixes[0]);
 
-            for (int i = 1; i < c + 1; i++)
+            for (int i = 1; i < critCount + 1; i++)
             {
-                ElementsFromKeyboard(matrixes[i], a);
+                matrix.ElementsFromKeyboard(matrixes[i]);
             }
 
-            CalcMatrixElements(matrixes[0], c);
-            NormalizeMatrix(matrixes[0], c);
-            var critWeightsMatrix = CalcWeights(matrixes[0], c);
+            matrix.CalcElements(matrixes[0]);
+            matrix.Normalize(matrixes[0]);
+            var critWeightsMatrix = matrix.CalcWeights(matrixes[0]);
 
-            for (int i = 1; i < c + 1; i++)
+            for (int i = 1; i < critCount + 1; i++)
             {
-                CalcMatrixElements(matrixes[i], a);
-                NormalizeMatrix(matrixes[i], a);
-                weights.Add(CalcWeights(matrixes[i], a));
+                matrix.CalcElements(matrixes[i]);
+                matrix.Normalize(matrixes[i]);
+                weights.Add(matrix.CalcWeights(matrixes[i]));
             }
 
-            var weightsMatrix = FormWeightsMatrix(weights, c, a);
+            var weightsMatrix = matrix.FormWeights(weights, alterCount);
 
             Console.WriteLine("-------------------------------------");
             Console.WriteLine("Матрица коэффициентов критериев:");
 
-            for (int i = 0; i < c; i++)
+            for (int i = 0; i < critCount; i++)
             {
                 Console.Write("{0}\t", critWeightsMatrix[i]);
                 Console.WriteLine();
@@ -220,9 +200,9 @@ namespace testsaati
             Console.WriteLine("-------------------------------------");
             Console.WriteLine("Матрица коэффициентов по каждому критерию:");
 
-            for (int i = 0; i < a; i++)
+            for (int i = 0; i < alterCount; i++)
             {
-                for (int j = 0; j < c; j++)
+                for (int j = 0; j < critCount; j++)
                 {
                     Console.Write("{0}\t", weightsMatrix[i, j]);
                 }
@@ -231,11 +211,11 @@ namespace testsaati
 
             Console.WriteLine("-------------------------------------");
 
-            var result = MatrixMultiplication(weightsMatrix, critWeightsMatrix, c, a);
-            var mostImportantCrit = FindMax(critWeightsMatrix);
-            var mostSuitableChoice = FindMax(result);
-            Console.WriteLine("Наиболее важный критерий - {0}, c важностью {1}", mostImportantCrit[1], mostImportantCrit[0]);
-            Console.WriteLine("Наиболее подходящий вариант - {0}, c вероятностью {1}%", mostSuitableChoice[1], mostSuitableChoice[0] * 100);
+            var result = matrix.Multiplication(weightsMatrix, critWeightsMatrix);
+            var mostImportantCrit = matrix.FindMax(critWeightsMatrix);
+            var mostSuitableChoice = matrix.FindMax(result);
+            Console.WriteLine("Наиболее важный критерий - {0}, c важностью {1}", mostImportantCrit.index, mostImportantCrit.max);
+            Console.WriteLine("Наиболее подходящий вариант - {0}, c вероятностью {1}%", mostSuitableChoice.index, mostSuitableChoice.max * 100);
 
             Console.ReadKey();
         }
