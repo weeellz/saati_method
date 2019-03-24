@@ -5,19 +5,8 @@ namespace testsaati
     public class Matrix
     {
         private double[,] data;
-        public int Height
-        {
-            get => data.GetLength(0);
-        }
-        public int Width
-        {
-            get => data.GetLength(1);
-        }
-
-        public Matrix()
-        {
-
-        }
+        public int Height => data.GetLength(0);
+        public int Width => data.GetLength(1);
 
         public Matrix(int height, int width)
         {

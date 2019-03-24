@@ -7,7 +7,7 @@ namespace testsaati
         // заполнение элементов матрицы над главной диагональю
         public static void ElementsFromKeyboard(this Matrix matrix)
         {
-            var len = matrix.Height;
+            var len = matrix.Height; // здесь и далее: так как матрицы квадратные, то можно взять размер одного из измерений
             for (int i = 0; i < len; i++)
             {
                 for (int j = 0; j < len; j++)
@@ -22,7 +22,7 @@ namespace testsaati
         }
 
         // расчёт элементов под главной диагональю
-        public static void CalcElements(Matrix matrix)
+        public static void CalcElements(this Matrix matrix)
         {
             var len = matrix.Height;
             for (int i = len - 1; i > 0; i--)
@@ -35,7 +35,7 @@ namespace testsaati
         }
 
         // расчёт весов строк матрицы (среднее суммы элементов столбцов)
-        public static Matrix CalcWeights(Matrix matrix)
+        public static Matrix CalcWeights(this Matrix matrix)
         {
             var len = matrix.Height;
             var weights = new Matrix(len, 1);
@@ -56,7 +56,7 @@ namespace testsaati
         }
 
         // поиск самого подходящего варианта в матрице
-        public static (double max, int lineIndex, int columnIndex) FindMax(Matrix matrix)
+        public static (double max, int lineIndex, int columnIndex) FindMax(this Matrix matrix)
         {
             var max = matrix[0, 0];
             var lineIndex = 0;

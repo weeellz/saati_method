@@ -8,14 +8,14 @@ namespace testsaati
         static void Main(string[] args)
         {
             Console.WriteLine("Кол-во критериев");
-            int critCount = int.Parse(Console.ReadLine());
+            var critCount = int.Parse(Console.ReadLine());
             Console.WriteLine("Кол-во альтернатив");
-            int alterCount = int.Parse(Console.ReadLine());
+            var alterCount = int.Parse(Console.ReadLine());
 
             Console.WriteLine("-------------------------------------");
 
-            List<Matrix> matrixes = new List<Matrix>();
-            List<Matrix> weights = new List<Matrix>();
+            var matrixes = new List<Matrix>();
+            var weights = new List<Matrix>();
 
             matrixes.Add(new Matrix(critCount, critCount));
 
@@ -34,15 +34,15 @@ namespace testsaati
                 matrixes[i].ElementsFromKeyboard();
             }
 
-            MatrixExtensions.CalcElements(matrixes[0]);
+            matrixes[0].CalcElements();
             Matrix.Normalize(matrixes[0]);
-            var critWeightsMatrix = MatrixExtensions.CalcWeights(matrixes[0]);
+            var critWeightsMatrix = matrixes[0].CalcWeights();
 
             for (int i = 1; i < critCount + 1; i++)
             {
-                MatrixExtensions.CalcElements(matrixes[i]);
+                matrixes[i].CalcElements();
                 Matrix.Normalize(matrixes[i]);
-                weights.Add(MatrixExtensions.CalcWeights(matrixes[i]));
+                weights.Add(matrixes[i].CalcWeights());
             }
 
             var weightsMatrix = Matrix.FormWeights(weights);
@@ -59,16 +59,7 @@ namespace testsaati
 
             Console.WriteLine("-------------------------------------");
 
-            var result = new Matrix();
-
-            try
-            {
-                result = weightsMatrix * critWeightsMatrix;
-            }
-            catch (MatrixInvalidShapeException ex)
-            {
-                Console.WriteLine("Ошибка: " + ex.Message);
-            }
+            var result = weightsMatrix * critWeightsMatrix;
 
             Console.WriteLine("Результирующая матрица:");
 
@@ -76,8 +67,8 @@ namespace testsaati
 
             Console.WriteLine("-------------------------------------");
 
-            var mostImportantCrit = MatrixExtensions.FindMax(critWeightsMatrix);
-            var mostSuitableChoice = MatrixExtensions.FindMax(result);
+            var mostImportantCrit = critWeightsMatrix.FindMax();
+            var mostSuitableChoice = result.FindMax();
 
             Console.WriteLine("Наиболее важный критерий - {0}, c важностью {1}",
                 mostImportantCrit.lineIndex, mostImportantCrit.max);
