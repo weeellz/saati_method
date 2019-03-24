@@ -4,16 +4,6 @@ namespace testsaati
 {
     public static class MatrixExtensions
     {
-        // заполнение главной диагонали единицами
-        public static void Init(Matrix matrix)
-        {
-            var len = matrix.Height; // здесь и далее: так как матрицы квадратные, то можно взять размер одного из измерений
-            for (int i = 0; i < len; i++)
-            {
-                matrix[i, i] = 1;
-            }
-        }
-
         // заполнение элементов матрицы над главной диагональю
         public static void ElementsFromKeyboard(this Matrix matrix)
         {
@@ -40,26 +30,6 @@ namespace testsaati
                 for (int j = i - 1; j >= 0; j--)
                 {
                     matrix[i, j] = 1D / matrix[j, i];
-                }
-            }
-        }
-
-        // нормализация матрицы (считается сумма элементов в столбце и каждый элемент столбца делится на эту сумму)
-        public static void Normalize(Matrix matrix)
-        {
-            var len = matrix.Height;
-            for (int j = 0; j < len; j++)
-            {
-                var columnSum = 0D;
-
-                for (int i = 0; i < len; i++)
-                {
-                    columnSum += matrix[i, j];
-                }
-
-                for (int i = 0; i < len; i++)
-                {
-                    matrix[i, j] /= columnSum;
                 }
             }
         }
@@ -111,11 +81,11 @@ namespace testsaati
         }
 
         // печать матрицы
-        public static void Show(this Matrix matrix, int height, int width)
+        public static void Show(this Matrix matrix)
         {
-            for (int i = 0; i < height; i++)
+            for (int i = 0; i < matrix.Height; i++)
             {
-                for (int j = 0; j < width; j++)
+                for (int j = 0; j < matrix.Width; j++)
                 {
                     Console.Write("{0}\t", matrix[i, j]);
                 }

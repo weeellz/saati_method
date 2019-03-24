@@ -2,14 +2,10 @@
 
 namespace testsaati
 {
-    class MatrixInvalidShapeException : MatrixException
+    class MatrixInvalidShapeException : Exception
     {
-        public void Exception(Matrix matrix1, Matrix matrix2)
-        {
-            if (matrix1.Width != matrix2.Height)
-            {
-                throw new Exception("Размеры матриц не совпадают.");
-            }
-        }
+        public MatrixInvalidShapeException(string message)
+            : base(message)
+        { }
     }
 }

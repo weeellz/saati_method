@@ -5,8 +5,14 @@ namespace testsaati
     public class Matrix
     {
         private double[,] data;
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Height
+        {
+            get => data.GetLength(0);
+        }
+        public int Width
+        {
+            get => data.GetLength(1);
+        }
 
         public Matrix()
         {
@@ -16,8 +22,6 @@ namespace testsaati
         public Matrix(int height, int width)
         {
             data = new double[height, width];
-            Height = height;
-            Width = width;
         }
 
         public double this[int line, int column]
@@ -26,9 +30,46 @@ namespace testsaati
             set { data[line, column] = value; }
         }
 
+        // заполнение главной диагонали единицами
+        public static void CreateDiagonal(Matrix matrix)
+        {
+            var len = matrix.Height; // здесь и далее: так как матрицы квадратные, то можно взять размер одного из измерений
+            for (int i = 0; i < len; i++)
+            {
+                matrix[i, i] = 1;
+            }
+        }
+
+        // нормализация матрицы (считается сумма элементов в столбце и каждый элемент столбца делится на эту сумму)
+        public static void Normalize(Matrix matrix)
+        {
+            var len = matrix.Height;
+            for (int j = 0; j < len; j++)
+            {
+                var columnSum = 0D;
+
+                for (int i = 0; i < len; i++)
+                {
+                    columnSum += matrix[i, j];
+                }
+
+                for (int i = 0; i < len; i++)
+                {
+                    matrix[i, j] /= columnSum;
+                }
+            }
+        }
+
         // умножение матриц
         public static Matrix operator *(Matrix matrix1, Matrix matrix2)
         {
+            if (matrix1.Width != matrix2.Height)
+            {
+                throw new MatrixInvalidShapeException("Матрицы нельзя перемножить. " +
+                                                      "Количество столбцов первой матрицы не совпадает" +
+                                                      " с количеством строк второй матрицы.");
+            }
+
             var result = new Matrix(matrix1.Height, matrix2.Width);
 
             for (int i = 0; i < matrix1.Height; i++)
