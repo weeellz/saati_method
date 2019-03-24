@@ -31,11 +31,11 @@ namespace testsaati
                 MatrixOperators.Init(matrixes[i]);
             }
 
-            MatrixOperators.ElementsFromKeyboard(matrixes[0]);
+            matrixes[0].ElementsFromKeyboard();
 
             for (int i = 1; i < critCount + 1; i++)
             {
-                MatrixOperators.ElementsFromKeyboard(matrixes[i]);
+                matrixes[i].ElementsFromKeyboard();
             }
 
             MatrixOperators.CalcElements(matrixes[0]);
@@ -56,7 +56,7 @@ namespace testsaati
 
             for (int i = 0; i < critCount; i++)
             {
-                Console.Write("{0}\t", critWeightsMatrix.data[i, 0]);
+                Console.Write("{0}\t", critWeightsMatrix[i, 0]);
                 Console.WriteLine();
             }
 
@@ -67,14 +67,14 @@ namespace testsaati
             {
                 for (int j = 0; j < critCount; j++)
                 {
-                    Console.Write("{0}\t", weightsMatrix.data[i, j]);
+                    Console.Write("{0}\t", weightsMatrix[i, j]);
                 }
                 Console.WriteLine();
             }
 
             Console.WriteLine("-------------------------------------");
 
-            var result = MatrixOperators.Multiplication(weightsMatrix, critWeightsMatrix);
+            var result = weightsMatrix * critWeightsMatrix;
             var mostImportantCrit = MatrixOperators.FindMax(critWeightsMatrix);
             var mostSuitableChoice = MatrixOperators.FindMax(result);
             Console.WriteLine("Наиболее важный критерий - {0}, c важностью {1}", mostImportantCrit.index, mostImportantCrit.max);
