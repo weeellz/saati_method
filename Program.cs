@@ -24,61 +24,72 @@ namespace testsaati
                 matrixes.Add(new Matrix(alterCount, alterCount));
             }
 
-            MatrixOperators.Init(matrixes[0]);
-
-            for (int i = 1; i < critCount + 1; i++)
+            for (int i = 0; i < critCount + 1; i++)
             {
-                MatrixOperators.Init(matrixes[i]);
+                MatrixExtensions.Init(matrixes[i]);
             }
 
-            matrixes[0].ElementsFromKeyboard();
-
-            for (int i = 1; i < critCount + 1; i++)
+            for (int i = 0; i < critCount + 1; i++)
             {
                 matrixes[i].ElementsFromKeyboard();
             }
 
-            MatrixOperators.CalcElements(matrixes[0]);
-            MatrixOperators.Normalize(matrixes[0]);
-            var critWeightsMatrix = MatrixOperators.CalcWeights(matrixes[0]);
+            MatrixExtensions.CalcElements(matrixes[0]);
+            MatrixExtensions.Normalize(matrixes[0]);
+            var critWeightsMatrix = MatrixExtensions.CalcWeights(matrixes[0]);
 
             for (int i = 1; i < critCount + 1; i++)
             {
-                MatrixOperators.CalcElements(matrixes[i]);
-                MatrixOperators.Normalize(matrixes[i]);
-                weights.Add(MatrixOperators.CalcWeights(matrixes[i]));
+                MatrixExtensions.CalcElements(matrixes[i]);
+                MatrixExtensions.Normalize(matrixes[i]);
+                weights.Add(MatrixExtensions.CalcWeights(matrixes[i]));
             }
 
-            var weightsMatrix = MatrixOperators.FormWeights(weights, alterCount);
+            var weightsMatrix = Matrix.FormWeights(weights);
 
             Console.WriteLine("-------------------------------------");
             Console.WriteLine("Матрица коэффициентов критериев:");
 
-            for (int i = 0; i < critCount; i++)
-            {
-                Console.Write("{0}\t", critWeightsMatrix[i, 0]);
-                Console.WriteLine();
-            }
+            critWeightsMatrix.Show(critWeightsMatrix.Height, critWeightsMatrix.Width);
 
             Console.WriteLine("-------------------------------------");
             Console.WriteLine("Матрица коэффициентов по каждому критерию:");
 
-            for (int i = 0; i < alterCount; i++)
-            {
-                for (int j = 0; j < critCount; j++)
-                {
-                    Console.Write("{0}\t", weightsMatrix[i, j]);
-                }
-                Console.WriteLine();
-            }
+            weightsMatrix.Show(weightsMatrix.Height, weightsMatrix.Width);
 
             Console.WriteLine("-------------------------------------");
 
-            var result = weightsMatrix * critWeightsMatrix;
-            var mostImportantCrit = MatrixOperators.FindMax(critWeightsMatrix);
-            var mostSuitableChoice = MatrixOperators.FindMax(result);
-            Console.WriteLine("Наиболее важный критерий - {0}, c важностью {1}", mostImportantCrit.index, mostImportantCrit.max);
-            Console.WriteLine("Наиболее подходящий вариант - {0}, c вероятностью {1}%", mostSuitableChoice.index, mostSuitableChoice.max * 100);
+            var result = new Matrix();
+
+            try
+            {
+                result = weightsMatrix * critWeightsMatrix;
+            }
+            catch (MatrixInvalidShapeException ex)
+            {
+                Console.WriteLine("Ошибка:" + ex.Message);
+            }
+
+            Console.WriteLine("Результирующая матрица:");
+
+            result.Show(result.Height, result.Width);
+
+            Console.WriteLine("-------------------------------------");
+
+            var mostImportantCrit = MatrixExtensions.FindMax(critWeightsMatrix);
+            var mostSuitableChoice = MatrixExtensions.FindMax(result);
+
+            Console.WriteLine("Наиболее важный критерий - {0}, c важностью {1}", mostImportantCrit.lineIndex, mostImportantCrit.max);
+
+            if (result.Width < 2)
+            {
+                Console.WriteLine("Наиболее подходящий вариант - {0}, c вероятностью {1}%", mostSuitableChoice.lineIndex, mostSuitableChoice.max * 100);
+            }
+            else
+            {
+                Console.WriteLine("Наиболее подходящий вариант - [{0},{1}], c вероятностью {2}%", mostSuitableChoice.lineIndex,
+                    mostSuitableChoice.columnIndex, mostSuitableChoice.max * 100);
+            }
 
             Console.ReadKey();
         }

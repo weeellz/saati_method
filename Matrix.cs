@@ -1,17 +1,23 @@
-﻿namespace testsaati
+﻿using System.Collections.Generic;
+
+namespace testsaati
 {
     public class Matrix
     {
         private double[,] data;
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         public Matrix()
         {
 
         }
 
-        public Matrix(int countLine, int countColumn)
+        public Matrix(int height, int width)
         {
-            data = new double[countLine, countColumn];
+            data = new double[height, width];
+            Height = height;
+            Width = width;
         }
 
         public double this[int line, int column]
@@ -20,27 +26,43 @@
             set { data[line, column] = value; }
         }
 
-        public int GetLength(int dimension)
-        {
-            return data.GetLength(dimension);
-        }
-
-        // умножение матриц (матрица с n столбцами и m строками на матрицу c 1 столбцом и n строк)
+        // умножение матриц
         public static Matrix operator *(Matrix matrix1, Matrix matrix2)
         {
-            var critCount = matrix1.GetLength(1);
-            var alterCount = matrix1.GetLength(0);
-            var result = new Matrix(critCount, 1);
+            var result = new Matrix(matrix1.Height, matrix2.Width);
 
-            for (int i = 0; i < alterCount; i++)
+            for (int i = 0; i < matrix1.Height; i++)
             {
-                for (int j = 0; j < critCount; j++)
+                for (int j = 0; j < matrix2.Width; j++)
                 {
-                    result[i, 0] += matrix1[i, j] * matrix2[j, 0];
+                    for (int z = 0; z < matrix1.Width; z++)
+                    {
+                        result[i, j] += matrix1[i, z] * matrix2[z, j];
+                    }
                 }
             }
 
             return result;
+        }
+
+        // формарование матрицы весов по каждому критерию
+        public static Matrix FormWeights(List<Matrix> weights)
+        {
+            var width = weights[0].Width;
+            var height = weights[0].Height;
+            var weightsMatrix = new Matrix(height, weights.Count);
+
+            for (int z = 0; z < weights.Count; z++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    for (int i = 0; i < height; i++)
+                    {
+                        weightsMatrix[i, z] = weights[z][i, j];
+                    }
+                }
+            }
+            return weightsMatrix;
         }
     }
 }

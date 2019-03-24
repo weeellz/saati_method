@@ -45,7 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Matrix.cs" />
-    <Compile Include="MatrixOperators.cs" />
+    <Compile Include="MatrixException.cs" />
+    <Compile Include="MatrixExtensions.cs" />
+    <Compile Include="MatrixInvalidShapeException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

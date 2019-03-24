@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace testsaati
 {
-    public static class MatrixOperators
+    public static class MatrixExtensions
     {
         // заполнение главной диагонали единицами
         public static void Init(Matrix matrix)
         {
-            var len = matrix.GetLength(0);
+            var len = matrix.Height; // здесь и далее: так как матрицы квадратные, то можно взять размер одного из измерений
             for (int i = 0; i < len; i++)
             {
                 matrix[i, i] = 1;
@@ -18,7 +17,7 @@ namespace testsaati
         // заполнение элементов матрицы над главной диагональю
         public static void ElementsFromKeyboard(this Matrix matrix)
         {
-            var len = matrix.GetLength(0);
+            var len = matrix.Height;
             for (int i = 0; i < len; i++)
             {
                 for (int j = 0; j < len; j++)
@@ -35,7 +34,7 @@ namespace testsaati
         // расчёт элементов под главной диагональю
         public static void CalcElements(Matrix matrix)
         {
-            var len = matrix.GetLength(0);
+            var len = matrix.Height;
             for (int i = len - 1; i > 0; i--)
             {
                 for (int j = i - 1; j >= 0; j--)
@@ -48,7 +47,7 @@ namespace testsaati
         // нормализация матрицы (считается сумма элементов в столбце и каждый элемент столбца делится на эту сумму)
         public static void Normalize(Matrix matrix)
         {
-            var len = matrix.GetLength(0);
+            var len = matrix.Height;
             for (int j = 0; j < len; j++)
             {
                 var columnSum = 0D;
@@ -68,7 +67,7 @@ namespace testsaati
         // расчёт весов строк матрицы (среднее суммы элементов столбцов)
         public static Matrix CalcWeights(Matrix matrix)
         {
-            var len = matrix.GetLength(0);
+            var len = matrix.Height;
             var weights = new Matrix(len, 1);
 
             for (int i = 0; i < len; i++)
@@ -86,42 +85,41 @@ namespace testsaati
             return weights;
         }
 
-        // формарование матрицы весов по каждому критерию
-        public static Matrix FormWeights(List<Matrix> weights, int alterCount)
+        // поиск самого подходящего варианта в матрице
+        public static (double max, int lineIndex, int columnIndex) FindMax(Matrix matrix)
         {
-            var weightsMatrix = new Matrix(alterCount, weights.Count);
-            var len = weights[0].GetLength(1);
+            var max = matrix[0, 0];
+            var lineIndex = 0;
+            var columnIndex = 0;
+            var height = matrix.Height;
+            var width = matrix.Width;
 
-            for (int z = 0; z < weights.Count; z++)
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < len; j++)
+                for (int j = 0; j < width; j++)
                 {
-                    for (int i = 0; i < alterCount; i++)
+                    if (max < matrix[i, 0])
                     {
-                        weightsMatrix[i, z] = weights[z][i, j];
+                        max = matrix[i, 0];
+                        lineIndex = i;
+                        columnIndex = j;
                     }
                 }
             }
-            return weightsMatrix;
+
+            return (max, lineIndex + 1, columnIndex + 1);
         }
 
-        // поиск самого подходящего варианта в матрице из одного столбца/строки
-        public static (double max, int index) FindMax(Matrix matrix)
+        public static void Show(this Matrix matrix, int height, int width)
         {
-            var max = matrix[0, 0];
-            var index = 0;
-            var len = matrix.GetLength(0);
-
-            for (int i = 0; i < len; i++)
+            for (int i = 0; i < height; i++)
             {
-                if (max < matrix[i, 0])
+                for (int j = 0; j < width; j++)
                 {
-                    max = matrix[i, 0];
-                    index = i;
+                    Console.Write("{0}\t", matrix[i, j]);
                 }
+                Console.WriteLine();
             }
-
-            return (max, index + 1);
         }
     }
 }
