@@ -45,7 +45,7 @@ namespace testsaati
             return result;
         }
 
-        // формарование матрицы весов по каждому критерию
+        // формирование матрицы весов по каждому критерию
         public static Matrix FormWeights(List<Matrix> weights)
         {
             var width = weights[0].Width;

@@ -110,6 +110,7 @@ namespace testsaati
             return (max, lineIndex + 1, columnIndex + 1);
         }
 
+        // печать матрицы
         public static void Show(this Matrix matrix, int height, int width)
         {
             for (int i = 0; i < height; i++)
